@@ -1,4 +1,5 @@
- import mongoose, { Schema, Types, model } from 'mongoose';
+ import e from 'express';
+import mongoose, { Schema, Types, model } from 'mongoose';
 
 async function connectDB() {
   try {
@@ -26,7 +27,10 @@ const ContentSchema = new Schema({
   userId: { type: mongoose.Types.ObjectId, ref: 'User' }, 
 });
 
-
+const LinkSchema = new Schema({
+  userId:{type: mongoose.Types.ObjectId},
+  slug:{type: String, required: true, unique: true}
+})
 
 const TagSchema = new Schema({
   name: { type: String, required: true },
@@ -35,3 +39,5 @@ const TagSchema = new Schema({
 export const Tag = model('Tag', TagSchema);
 
 export const Content = model("Content",ContentSchema)
+
+export const Link = model("Link",LinkSchema)

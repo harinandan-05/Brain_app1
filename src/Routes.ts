@@ -1,10 +1,11 @@
 import express , { Router,Request,Response} from "express";
 import mongoose from "mongoose";
-import { Content, User, Tag} from './db';
+import { Content, User, Tag, Link} from './db';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from "./config";
 import { userMiddleware } from "./auth";
+import { nanoid } from 'nanoid';
 
 const router :Router  = express.Router();
 
@@ -128,6 +129,34 @@ router.post('/delete',userMiddleware , async (req: Request, res: Response) => {
   }
 
 });
+
+router.post('/brain/generateLink',userMiddleware, async (req: Request , res : Response) => {
+  const userId = (req as any).userId
+  const findUser = await Content.findOne({
+    userId:userId
+  })
+  if(!findUser){
+    res.status(411).json({msg:"user not found"})
+    return
+  }
+  const contents = await Content.findOne({
+    userId:userId,
+  })
+  if(!contents){
+    res.status(411).json({msg:"no contents"})
+    return
+  }
+  const slug = nanoid(5)
+  const link = new Link({
+    userId,
+    slug,
+    contents
+  })
+  await link.save();
+  res.json({ msg: "Link created", url: `https://yourapp.com/brain/view/${slug}` });
+  
+})
+
 
 router.get('/brain/sharelink',userMiddleware,async (req: Request, res: Response) => {
   const userId = (req as any).userId;
