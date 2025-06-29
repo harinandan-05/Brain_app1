@@ -7,6 +7,7 @@ import { JWT_SECRET } from "./config";
 import { userMiddleware } from "./auth";
 import { nanoid } from 'nanoid';
 
+
 const router :Router  = express.Router();
 
 router.post('/signup',async function(req:Request, res:Response){

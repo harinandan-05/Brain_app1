@@ -9,6 +9,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("./config");
 const auth_1 = require("./auth");
+const nanoid_1 = require("nanoid");
 const router = express_1.default.Router();
 router.post('/signup', async function (req, res) {
     const { username, password } = req.body;
@@ -111,6 +112,31 @@ router.post('/delete', auth_1.userMiddleware, async (req, res) => {
         });
         res.status(200).json({ msg: "deleted" });
     }
+});
+router.post('/brain/generateLink', auth_1.userMiddleware, async (req, res) => {
+    const userId = req.userId;
+    const findUser = await db_1.Content.findOne({
+        userId: userId
+    });
+    if (!findUser) {
+        res.status(411).json({ msg: "user not found" });
+        return;
+    }
+    const contents = await db_1.Content.findOne({
+        userId: userId,
+    });
+    if (!contents) {
+        res.status(411).json({ msg: "no contents" });
+        return;
+    }
+    const slug = (0, nanoid_1.nanoid)(5);
+    const link = new db_1.Link({
+        userId,
+        slug,
+        contents
+    });
+    await link.save();
+    res.json({ msg: "Link created", url: `https://yourapp.com/brain/view/${slug}` });
 });
 router.get('/brain/sharelink', auth_1.userMiddleware, async (req, res) => {
     const userId = req.userId;

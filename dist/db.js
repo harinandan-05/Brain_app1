@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Content = exports.Tag = exports.User = void 0;
+exports.Link = exports.Content = exports.Tag = exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 async function connectDB() {
     try {
@@ -56,8 +56,13 @@ const ContentSchema = new mongoose_1.Schema({
     tags: [{ type: mongoose_1.default.Types.ObjectId, ref: 'Tag' }],
     userId: { type: mongoose_1.default.Types.ObjectId, ref: 'User' },
 });
+const LinkSchema = new mongoose_1.Schema({
+    userId: { type: mongoose_1.default.Types.ObjectId },
+    slug: { type: String, required: true, unique: true }
+});
 const TagSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
 });
 exports.Tag = (0, mongoose_1.model)('Tag', TagSchema);
 exports.Content = (0, mongoose_1.model)("Content", ContentSchema);
+exports.Link = (0, mongoose_1.model)("Link", LinkSchema);
